@@ -1,4 +1,4 @@
-package com.mario.authservice.auth_service;
+package com.mario.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

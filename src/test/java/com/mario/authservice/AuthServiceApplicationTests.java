@@ -1,4 +1,4 @@
-package com.mario.authservice.auth_service;
+package com.mario.authservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
