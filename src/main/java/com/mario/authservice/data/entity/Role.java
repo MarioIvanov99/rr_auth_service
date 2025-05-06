@@ -2,19 +2,21 @@ package com.mario.authservice.data.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Set;
 
 @Entity
 @Getter
+@RequiredArgsConstructor
 @Table(name="role")
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String authority;
+    private final String authority;
 
     @ManyToMany
     @JoinTable(

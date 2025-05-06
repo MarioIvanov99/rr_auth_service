@@ -1,5 +1,7 @@
 package com.mario.authservice.service;
 
+import com.mario.authservice.data.entity.User;
+import com.mario.authservice.data.entity.Role;
 import com.mario.authservice.data.repository.UserRepository;
 import com.mario.authservice.dto.AuthRequest;
 import com.mario.authservice.dto.AuthResponse;
@@ -7,7 +9,10 @@ import com.mario.authservice.dto.RegisterRequest;
 import com.mario.authservice.exception.EmailAlreadyExistsException;
 import com.mario.authservice.exception.UsernameAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.util.ResourceSet;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +28,28 @@ public class AuthServiceImpl implements AuthService {
             throw new EmailAlreadyExistsException("Email already exists");
         }
 
+        User user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .authorities(Set.of(new Role("ROLE_USER")))
+                .isAccountNonExpired(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isEnabled(true)
+                .isDeleted(false)
+                .build();
 
+        userRepository.save(user);
+
+        String token = jwtUtils.generateToken(user);
+
+        return new AuthResponse(
+                token,
+                "Bearer",
+                user.getUsername(),
+                user.getAuthorities().iterator().next().getAuthority()
+        );
     }
 
     @Override
