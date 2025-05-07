@@ -1,15 +1,13 @@
 package com.mario.authservice.data.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Set;
 
 @Entity
-@Getter
-@RequiredArgsConstructor
+@Data
 @Table(name="role")
 public class Role implements GrantedAuthority {
     @Id

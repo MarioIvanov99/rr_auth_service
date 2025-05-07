@@ -2,12 +2,9 @@ package com.mario.authservice.dto;
 
 import lombok.*;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class AuthResponse {
     private String token;
     private String tokenType = "Bearer";
