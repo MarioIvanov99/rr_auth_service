@@ -10,6 +10,8 @@ import com.mario.authservice.exception.EmailAlreadyExistsException;
 import com.mario.authservice.exception.UsernameAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.util.ResourceSet;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -54,6 +56,20 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(AuthRequest request){
+        User user = userRepository.findByUsername(request.getUsernameOrEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid username or email"));
 
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+        String dummyToken = "authenticated-basic-session";
+
+        return new AuthResponse(
+                dummyToken,
+                "Basic",
+                user.getUsername(),
+                user.getAuthorities().iterator().next().getAuthority()
+        );
     }
 }
