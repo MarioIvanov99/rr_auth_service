@@ -9,9 +9,9 @@ import com.mario.authservice.dto.RegisterRequest;
 import com.mario.authservice.exception.EmailAlreadyExistsException;
 import com.mario.authservice.exception.UsernameAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.util.ResourceSet;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -20,6 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AuthResponse register(RegisterRequest request){
@@ -33,8 +34,8 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
-                .password(request.getPassword())
-                .authorities(Set.of(new Role("ROLE_USER")))
+                .password(passwordEncoder.encode(request.getPassword()))
+                .authorities(Set.of(new Role()))
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
                 .isCredentialsNonExpired(true)
@@ -44,11 +45,13 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        String token = jwtUtils.generateToken(user);
+        //String token = jwtUtils.generateToken(user);
+
+        String dummyToken = "authenticated-basic-session";
 
         return new AuthResponse(
-                token,
-                "Bearer",
+                dummyToken,
+                "Basic",
                 user.getUsername(),
                 user.getAuthorities().iterator().next().getAuthority()
         );

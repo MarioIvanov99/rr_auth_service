@@ -16,16 +16,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, u.role) " +
-            "FROM User u WHERE u.id = :id AND u.isDeleted = false")
+    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
+            "FROM User u JOIN u.authorities r " + // Join with roles
+            "WHERE u.id = :id AND u.isDeleted = false")
     Optional<UserDto> findUserDtoById(@Param("id") Long id);
 
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, u.role) " +
-            "FROM User u WHERE u.username = :username AND u.isDeleted = false")
+    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
+            "FROM User u JOIN u.authorities r " + // Join with roles
+            "WHERE u.username = :username AND u.isDeleted = false")
     Optional<UserDto> findUserDtoByUsername(@Param("username") String username);
 
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, u.role) " +
-            "FROM User u WHERE u.isDeleted = false")
+    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
+            "FROM User u JOIN u.authorities r " + // Join with roles
+            "WHERE u.isDeleted = false")
     List<UserDto> findAllActiveUsers();
 
     @Modifying
