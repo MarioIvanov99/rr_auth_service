@@ -18,25 +18,8 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(1) Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable @Min(1) Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/soft-delete/{id}")
-    public ResponseEntity<Void> softDeleteUser(@PathVariable @Min(1) Long id) {
-        userService.softDeleteUser(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/current")
+    public ResponseEntity<UserDto> getCurrentUser() {
+        return ResponseEntity.ok(userService.getCurrentUser());
     }
 }

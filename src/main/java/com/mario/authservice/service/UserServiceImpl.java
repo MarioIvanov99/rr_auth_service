@@ -1,10 +1,15 @@
 package com.mario.authservice.service;
 
+import com.mario.authservice.data.entity.User;
 import com.mario.authservice.data.repository.UserRepository;
 import com.mario.authservice.dto.UserDto;
+import com.mario.authservice.exception.UnauthorizedException;
 import com.mario.authservice.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,37 +27,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Long id){
-        UserDto user = userRepository.findUserDtoById(id).orElseThrow(
-                () -> new UserNotFoundException("User not found")
-        );
+    public UserDto getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return user;
-    }
-
-    @Override
-    public UserDto getCurrentUser(){
-        return null;
-    }
-
-    @Override
-    public List<UserDto> getAllUsers(){
-        return userRepository.findAllActiveUsers();
-    }
-
-    @Override
-    public void deleteUser(Long id){
-        if(!userRepository.existsById(id)){
-            throw new UserNotFoundException("User not found");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("User is not authenticated");
         }
-        userRepository.deleteById(id);
-    }
 
-    @Override
-    public void softDeleteUser(Long id){
-        if(!userRepository.existsById(id)){
-            throw new UserNotFoundException("User not found");
-        }
-        userRepository.softDeleteUserById(id);
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getAuthorities().iterator().next().getAuthority())
+                .build();
     }
 }

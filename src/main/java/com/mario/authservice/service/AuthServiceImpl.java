@@ -1,5 +1,6 @@
 package com.mario.authservice.service;
 
+import com.mario.authservice.config.JwtUtils;
 import com.mario.authservice.data.entity.User;
 import com.mario.authservice.data.entity.Role;
 import com.mario.authservice.data.repository.UserRepository;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     @Override
     public AuthResponse register(RegisterRequest request){
@@ -45,13 +47,12 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        //String token = jwtUtils.generateToken(user);
+        String token = jwtUtils.generateToken(user);
 
-        String dummyToken = "authenticated-basic-session";
 
         return new AuthResponse(
-                dummyToken,
-                "Basic",
+                token,
+                "JWT",
                 user.getUsername(),
                 user.getAuthorities().iterator().next().getAuthority()
         );
@@ -66,11 +67,11 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid username or password");
         }
 
-        String dummyToken = "authenticated-basic-session";
+        String token = jwtUtils.generateToken(user);
 
         return new AuthResponse(
-                dummyToken,
-                "Basic",
+                token,
+                "JWT",
                 user.getUsername(),
                 user.getAuthorities().iterator().next().getAuthority()
         );
