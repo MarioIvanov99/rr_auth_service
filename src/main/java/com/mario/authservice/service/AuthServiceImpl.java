@@ -60,7 +60,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse authenticate(AuthRequest request){
-        User user = userRepository.findByUsername(request.getUsernameOrEmail())
+        User user = userRepository
+                .findByUsernameOrEmail(request.getUsernameOrEmail(), request.getUsernameOrEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or email"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

@@ -13,25 +13,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
+    Optional<User> findByUsernameOrEmail(String username, String email);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
-
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
-            "FROM User u JOIN u.authorities r " + // Join with roles
-            "WHERE u.id = :id AND u.isDeleted = false")
-    Optional<UserDto> findUserDtoById(@Param("id") Long id);
-
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
-            "FROM User u JOIN u.authorities r " + // Join with roles
-            "WHERE u.username = :username AND u.isDeleted = false")
-    Optional<UserDto> findUserDtoByUsername(@Param("username") String username);
-
-    @Query("SELECT new com.mario.authservice.dto.UserDto(u.id, u.username, u.email, r.authority) " +
-            "FROM User u JOIN u.authorities r " + // Join with roles
-            "WHERE u.isDeleted = false")
-    List<UserDto> findAllActiveUsers();
-
-    @Modifying
-    @Query("UPDATE User u SET u.isDeleted = true WHERE u.id = :id")
-    void softDeleteUserById(@Param("id") Long id);
 }
